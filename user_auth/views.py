@@ -12,10 +12,11 @@ from django.views.decorators.csrf import csrf_exempt
 def register_api_view(request):
     username = request.data.get('username')
     password = request.data.get('password')
+    email = request.data.get('email')
     if User.objects.filter(username=username).exists():
-        return Response({'error': 'Username is already taken'}, status=status.HTTP_400_BAD_REQUEST)
-    User.objects.create_user(username=username, password=password)
-    return Response({'message': 'User registered successfully'}, status=status.HTTP_201_CREATED)
+        return Response({'status': 'error', 'message': 'Username is already taken'}, status=status.HTTP_200_OK)
+    User.objects.create_user(username=username, password=password, email=email)
+    return Response({'status': 'success', 'message': 'User registered successfully'}, status=status.HTTP_201_CREATED)
 
 @api_view(['POST'])
 @csrf_exempt
