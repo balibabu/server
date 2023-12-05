@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 CORS_ALLOW_ALL_ORIGINS = True
+# CSRF_TRUSTED_ORIGINS=["http://localhost:3000"]
 
 # Application definition
 
@@ -41,6 +42,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework.authtoken',
     'user_auth',
+    'todo',
+    'notepad',
     # '',
 ]
 
@@ -54,6 +57,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
 
 ROOT_URLCONF = 'controller.urls'
 
