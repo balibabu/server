@@ -4,14 +4,18 @@ from .models import Note
 from .serializers import NoteSerializer
 
 class NoteListCreateView(generics.ListCreateAPIView):
-    queryset = Note.objects.all()
     serializer_class = NoteSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Note.objects.filter(user=self.request.user).order_by('-created_time')
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-class NoteDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Note.objects.all()
+class NoteRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = NoteSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Note.objects.filter(user=self.request.user)
