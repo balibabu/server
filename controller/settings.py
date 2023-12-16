@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'user_auth',
     'todo',
     'notepad',
+    'expense',
     # '',
 ]
 

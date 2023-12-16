@@ -22,4 +22,5 @@ urlpatterns = [
     path('user/', include('user_auth.urls')),
     path('todo/', include('todo.urls')),
     path('note/', include('notepad.urls')),
+    path('expense/', include('expense.urls')),
 ]
