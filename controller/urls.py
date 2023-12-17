@@ -23,4 +23,6 @@ urlpatterns = [
     path('todo/', include('todo.urls')),
     path('note/', include('notepad.urls')),
     path('expense/', include('expense.urls')),
+    path('chat/', include('chat.urls')),
+    
 ]

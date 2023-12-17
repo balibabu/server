@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'todo',
     'notepad',
     'expense',
+    'chat',
     # '',
 ]
 

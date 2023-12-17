@@ -6,4 +6,4 @@ class Expense(models.Model):
     title = models.CharField(max_length=255)
     date = models.DateField(auto_now_add=True)
     amount = models.IntegerField()
-    recipient = models.CharField(max_length=255, default='self')
+    note = models.CharField(max_length=255, null=True)
