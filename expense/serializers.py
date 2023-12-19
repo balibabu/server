@@ -6,3 +6,5 @@ class ExpenseSerializer(serializers.ModelSerializer):
         model = Expense
         fields = '__all__'
         read_only_fields = ['user']
+        
+    note = serializers.CharField(allow_blank=True)

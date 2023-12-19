@@ -9,7 +9,7 @@ class ExpenseListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     
     def get_queryset(self):
-        return Expense.objects.filter(user=self.request.user).order_by('-date')
+        return Expense.objects.filter(user=self.request.user).order_by('-id')
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
