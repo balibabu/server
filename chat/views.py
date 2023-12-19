@@ -47,3 +47,21 @@ class MessageListView(generics.ListAPIView):
         ).order_by('timestamp')
 
         return queryset
+
+from django.db.models import Subquery, OuterRef
+class LatestMessageView(generics.ListAPIView):
+    serializer_class = MessageSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        latest_timestamps = Message.objects.filter(
+            receiver=user,
+            sender=OuterRef('sender')
+        ).order_by('-timestamp').values('timestamp')[:1]
+
+        return Message.objects.filter(
+            receiver=user,
+            timestamp__in=Subquery(latest_timestamps)
+        ).order_by('sender', '-timestamp')
+
