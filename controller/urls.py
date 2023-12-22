@@ -24,5 +24,6 @@ urlpatterns = [
     path('note/', include('notepad.urls')),
     path('expense/', include('expense.urls')),
     path('chat/', include('chat.urls')),
+    path('shorten/', include('shortlink.urls')),
     
 ]

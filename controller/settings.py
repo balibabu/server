@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'notepad',
     'expense',
     'chat',
-    # '',
+    'shortlink',
 ]
 
 MIDDLEWARE = [
