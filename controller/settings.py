@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'expense',
     'chat',
     'shortlink',
+    'user_data',
+    'storage',
 ]
 
 MIDDLEWARE = [

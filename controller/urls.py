@@ -25,5 +25,7 @@ urlpatterns = [
     path('expense/', include('expense.urls')),
     path('chat/', include('chat.urls')),
     path('shorten/', include('shortlink.urls')),
+    # path('userdata/', include('user_data.urls')),
+    path('storage/', include('storage.urls')),
     
 ]

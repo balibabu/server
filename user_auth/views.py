@@ -48,3 +48,15 @@ def logout_api_view(request):
 # from django.views.decorators.csrf import get_token
 # csrf_token = get_token(request)
 # print(csrf_token)
+
+
+
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def test(request):
+    user = request.user
+    from controller.alldata import get_all_data 
+    data=get_all_data(user)
+    return Response(data)
