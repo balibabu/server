@@ -2,17 +2,12 @@ from github import Github
 import time
 
 class GithubManager:
-    def __init__(self, token):
+    def __init__(self, token,repo_owner,repo_name,folder_name):
         self.g = Github(token)
-        self.repo_owner = "balibabu"  
-        self.repo_name = "media" 
+        self.repo_owner = repo_owner 
+        self.repo_name = repo_name
+        self.folder_name=folder_name
         self.branch_name = "main" 
-    
-    def set_repo_name(self,repo_name):
-        self.repo_name=repo_name
-    
-    def set_folder_name(self,name):
-        self.folder_name=name
     
 
     def delete_image_completely(self, file_name):
@@ -52,9 +47,21 @@ class GithubManager:
                 branch=self.branch_name
             )
 
-            file_url = f"https://github.com/{self.repo_owner}/{self.repo_name}/blob/{self.branch_name}/{file_path_in_repo}?raw=true"
-            return file_url, file_name
+# https://raw.githubusercontent.com/[gituser]/[repo-name]/main/[username/foldername]/[filename]
+            # file_url = f"https://github.com/{self.repo_owner}/{self.repo_name}/blob/{self.branch_name}/{file_path_in_repo}"
+            # file_url = f"https://github.com/{self.repo_owner}/{self.repo_name}/blob/{self.branch_name}/{file_path_in_repo}"
+            return file_name
         except Exception as e:
             print(f"Error uploading file: {e}")
-            return None, None
+            return False
+        
+    def get_file_content(self, file_path_in_repo):
+        try:
+            repo = self.g.get_repo(f"{self.repo_owner}/{self.repo_name}")
+            file_content = repo.get_contents(file_path_in_repo, ref=self.branch_name).decoded_content
+            return file_content
+        except Exception as e:
+            print(f"Error fetching file content: {e}")
+            return None
+
         
