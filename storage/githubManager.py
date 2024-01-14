@@ -1,3 +1,4 @@
+import base64
 from github import Github
 import time
 
@@ -9,7 +10,6 @@ class GithubManager:
         self.folder_name=folder_name
         self.branch_name = "main" 
     
-
     def delete_image_completely(self, file_name):
         try:
             repo = self.g.get_repo(f"{self.repo_owner}/{self.repo_name}")
@@ -46,22 +46,38 @@ class GithubManager:
                 content=file_content,
                 branch=self.branch_name
             )
-
-# https://raw.githubusercontent.com/[gituser]/[repo-name]/main/[username/foldername]/[filename]
-            # file_url = f"https://github.com/{self.repo_owner}/{self.repo_name}/blob/{self.branch_name}/{file_path_in_repo}"
-            # file_url = f"https://github.com/{self.repo_owner}/{self.repo_name}/blob/{self.branch_name}/{file_path_in_repo}"
-            return file_name
+            return True,file_name
         except Exception as e:
             print(f"Error uploading file: {e}")
-            return False
+            return False,e
         
-    def get_file_content(self, file_path_in_repo):
+    def get_file_content(self, filename):
         try:
             repo = self.g.get_repo(f"{self.repo_owner}/{self.repo_name}")
-            file_content = repo.get_contents(file_path_in_repo, ref=self.branch_name).decoded_content
-            return file_content
+            branch_ref = repo.get_branch(self.branch_name)
+            commit = repo.get_commit(branch_ref.commit.sha)
+            tree = repo.get_git_tree(commit.sha, recursive=True)
+            blob_sha = None
+            filepath=f'{self.folder_name}/{filename}'
+            for entry in tree.tree:
+                if entry.path == filepath:
+                    blob_sha = entry.sha
+                    break
+            if blob_sha:
+                blob_content = repo.get_git_blob(blob_sha).content
+                content_bytes = base64.b64decode(blob_content)
+                return True,content_bytes
+            else:
+                return False, 'file not found'
         except Exception as e:
-            print(f"Error fetching file content: {e}")
-            return None
+            return False, e
 
-        
+
+    def create_repo(self,repo_name):
+        try:
+            user=self.g.get_user()
+            new_repo=user.create_repo(repo_name,private=True)
+            return True
+        except Exception as e:
+            print(e)
+            return False

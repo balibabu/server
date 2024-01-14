@@ -42,8 +42,8 @@ def uploadFile(request):
         'fileSize': file.size,
     }
     github_manager = GithubManager(token,repo_owner,repo_name,user.username)
-    uploaded_filename = github_manager.upload_in_memory_file(file)
-    if not uploaded_filename: return Response(status=404)
+    status,uploaded_filename = github_manager.upload_in_memory_file(file)
+    if not status: return Response({'errors':uploaded_filename},status=404)
     data['uploadedName']=uploaded_filename
 
     serializer = StorageSerializer(data=data)
@@ -78,24 +78,17 @@ def deleteFile(request,sid):
 def downloadFile(request,file_id):
     user = request.user
     storage = Storage.objects.get(id=file_id, user=user)
+    file_name = storage.uploadedName
 
-    # Fetch GitHub information from the database
     github_info = storage.github
     token = github_info.token
     repo_owner = github_info.repo_owner
     repo_name = github_info.repo_name
 
-    # Fetch file details from the Storage object
-    file_name = storage.uploadedName
-    file_path_in_repo = f"{user.username}/{file_name}"  # Adjust the path accordingly
-
-    # Use GithubManager to get the file content
     github_manager = GithubManager(token, repo_owner, repo_name, user.username)
-    file_content = github_manager.get_file_content(file_path_in_repo)
-
-    # Return the file as a response
+    status, file_content = github_manager.get_file_content(file_name)
+    if not status: return Response({'error':file_content},status=400)
     response = HttpResponse(file_content, content_type='application/octet-stream')
-    response['Content-Disposition'] = f'attachment; filename="{file_name}"'
     return response
 
 
