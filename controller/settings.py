@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'shortlink',
     'user_data',
     'storage',
+    'lunar',
 ]
 
 MIDDLEWARE = [

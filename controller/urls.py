@@ -27,5 +27,6 @@ urlpatterns = [
     path('shorten/', include('shortlink.urls')),
     # path('userdata/', include('user_data.urls')),
     path('storage/', include('storage.urls')),
+    path('lunar/', include('lunar.urls')),
     
 ]
