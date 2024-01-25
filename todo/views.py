@@ -10,7 +10,8 @@ class TodoListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Todo.objects.filter(user=self.request.user, completed=False).order_by('-created_time')
+        return Todo.objects.filter(user=self.request.user).order_by('-created_time')
+        # return Todo.objects.filter(user=self.request.user, completed=False).order_by('-created_time')
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

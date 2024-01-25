@@ -1,14 +1,15 @@
 from rest_framework.decorators import api_view,permission_classes,authentication_classes
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from .utils.repoSizeHandler import RepoSizeHandler
+from django.shortcuts import get_object_or_404
+from .utils.githubManager import GithubManager
 from rest_framework.response import Response
-from rest_framework import status
 from .serializers import StorageSerializer
 from .models import Storage, GithubInfo
-from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
+from rest_framework import status
 
-from .githubManager import GithubManager
 file=open('gitToken.env')
 tk=file.read()
 
@@ -28,23 +29,18 @@ def uploadFile(request):
     user = request.user
     file = request.FILES.get('file')
     repo_owner = request.data.get('repo_owner', 'storeage')
-    repo_name = request.data.get('repo_name', 'media')
     token = request.data.get('token', str(tk))
+    repoHandler=RepoSizeHandler(token,user.username)
+    repo_name=repoHandler.get_free_repo(repo_owner)
+    github_info, created = GithubInfo.objects.get_or_create( repo_owner=repo_owner,repo_name=repo_name,token=token)
+    status,uploaded_filename = repoHandler.upload_file(repo_owner,repo_name,file)
+    if not status: return Response({'errors':uploaded_filename},status=404)
 
-    github_info, created = GithubInfo.objects.get_or_create(
-        repo_owner=repo_owner,
-        repo_name=repo_name,
-        token=token
-    )
-    
     data = {
         'originalName': file.name,
         'fileSize': file.size,
+        'uploadedName':uploaded_filename
     }
-    github_manager = GithubManager(token,repo_owner,repo_name,user.username)
-    status,uploaded_filename = github_manager.upload_in_memory_file(file)
-    if not status: return Response({'errors':uploaded_filename},status=404)
-    data['uploadedName']=uploaded_filename
 
     serializer = StorageSerializer(data=data)
     if serializer.is_valid():
@@ -63,8 +59,8 @@ def deleteFile(request,sid):
     repo_owner=file.github.repo_owner
     repo_name=file.github.repo_name
     token=file.github.token
-    github_manager = GithubManager(token,repo_owner,repo_name,user.username)
-    if github_manager.delete_image_completely(file.uploadedName):
+    obj=RepoSizeHandler(token,user.username)
+    if obj.delete_file(repo_owner,repo_name,file.uploadedName,file.fileSize):
         file.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     else:
@@ -85,8 +81,8 @@ def downloadFile(request,file_id):
     repo_owner = github_info.repo_owner
     repo_name = github_info.repo_name
 
-    github_manager = GithubManager(token, repo_owner, repo_name, user.username)
-    status, file_content = github_manager.get_file_content(file_name)
+    github_manager = GithubManager(token, user.username)
+    status, file_content = github_manager.get_file_content(repo_owner,repo_name,file_name)
     if not status: return Response({'error':file_content},status=400)
     response = HttpResponse(file_content, content_type='application/octet-stream')
     return response

@@ -6,3 +6,4 @@ class Todo(models.Model):
     title = models.CharField(max_length=255)
     completed = models.BooleanField(default=False)
     created_time = models.DateTimeField(auto_now_add=True)
+    category=models.CharField(max_length=255, default='default')

@@ -44,14 +44,11 @@ def WaxingOrWanning(month,day): # day,month should start from 0
 
 
 @api_view(['GET'])
-def getData(request):
-    current_date = datetime.now()
-    day_index = current_date.day-1
-    month_index = current_date.month-1
-    return Response({'illumination':moon_data[month_index][day_index],'phase':WaxingOrWanning(month_index,day_index)})
+def getData(request,pk1,pk2):
+    return Response({'illumination':moon_data[pk1][pk2],'phase':WaxingOrWanning(pk1,pk2)})
 
 urlpatterns = [
-    path('', getData, name='illumination-wax-wan'),
+    path('<int:pk1>/<int:pk2>/', getData, name='illumination-wax-wan'),
 ]
 
 
