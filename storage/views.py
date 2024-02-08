@@ -39,7 +39,8 @@ def uploadFile(request):
     data = {
         'originalName': file.name,
         'fileSize': file.size,
-        'uploadedName':uploaded_filename
+        'uploadedName':uploaded_filename,
+        'inside':request.data.get('inside','')
     }
 
     serializer = StorageSerializer(data=data)
@@ -49,7 +50,6 @@ def uploadFile(request):
     else:
         return Response(serializer.errors)
     
-
 @api_view(['DELETE'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -66,8 +66,6 @@ def deleteFile(request,sid):
     else:
         return Response({'error': 'Failed to delete the file.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
-
-
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -105,3 +103,26 @@ def getGitInfo(request):
     # github_info_list = GithubInfo.objects.filter(storage__user=user).distinct()
     serializer = GithubInfoCustomSerializer(github_info_list, many=True)
     return Response(serializer.data)
+
+from rest_framework import generics
+from .serializers import FolderSerializer
+from .models import Folder
+class FolderListCreateView(generics.ListCreateAPIView):
+    serializer_class=FolderSerializer
+    permission_classes=[IsAuthenticated]
+    def get_queryset(self):
+        return Folder.objects.filter(user=self.request.user)
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+    
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def getFilesAndFolders(request):
+    user = request.user
+    files=Storage.objects.filter(user=user).order_by('-timestamp')
+    file_serializer=StorageSerializer(files,many=True)
+    folders=Folder.objects.filter(user=user)
+    folder_serializer=FolderSerializer(folders,many=True)
+    return Response({'files':file_serializer.data,'folders':folder_serializer.data})

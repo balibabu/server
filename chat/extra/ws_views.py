@@ -20,3 +20,29 @@ def get_new_messages(request, msgid, senderid):
 
     serializer = MessageSerializer(queryset, many=True)
     return Response(serializer.data)
+
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def send_msg_get_latest_msg(request):
+    sender = request.user
+    rid=request.data.get('receiver_id')
+    receiver = User.objects.get(id=rid)
+    content=request.data.get('content')
+    data={'content':content}
+    serializer=MessageSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save(sender=sender,receiver=receiver)
+
+    last_msg_id=request.data.get('last_msg_id')
+    queryset = Message.objects.filter(
+        sender=receiver,
+        receiver=sender,
+        id__gt=last_msg_id
+    ).order_by('timestamp')
+
+    serializer2=MessageSerializer(queryset,many=True)
+    msgs=serializer2.data
+    msgs.append(serializer.data)
+    return Response(msgs)

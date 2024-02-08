@@ -11,4 +11,5 @@ urlpatterns = [
 
     ###### extra features ### for imitating weshocket
     path('new-msg/<int:msgid>/<int:senderid>/',ws_views.get_new_messages,name="get_new_messages"),
+    path('cend/',ws_views.send_msg_get_latest_msg,name='send-msg-and-get-msg')
 ]
