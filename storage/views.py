@@ -85,8 +85,12 @@ def downloadFile(request,file_id):
     response = HttpResponse(file_content, content_type='application/octet-stream')
     return response
 
-
-
+from rest_framework import generics
+class UpdateFileView(generics.UpdateAPIView):
+    serializer_class=StorageSerializer
+    permission_classes=[IsAuthenticated]
+    def get_queryset(self):
+        return Storage.objects.filter(user=self.request.user)
 
 from rest_framework import serializers
 class GithubInfoCustomSerializer(serializers.ModelSerializer):
@@ -103,26 +107,3 @@ def getGitInfo(request):
     # github_info_list = GithubInfo.objects.filter(storage__user=user).distinct()
     serializer = GithubInfoCustomSerializer(github_info_list, many=True)
     return Response(serializer.data)
-
-from rest_framework import generics
-from .serializers import FolderSerializer
-from .models import Folder
-class FolderListCreateView(generics.ListCreateAPIView):
-    serializer_class=FolderSerializer
-    permission_classes=[IsAuthenticated]
-    def get_queryset(self):
-        return Folder.objects.filter(user=self.request.user)
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-    
-
-@api_view(['GET'])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def getFilesAndFolders(request):
-    user = request.user
-    files=Storage.objects.filter(user=user).order_by('-timestamp')
-    file_serializer=StorageSerializer(files,many=True)
-    folders=Folder.objects.filter(user=user)
-    folder_serializer=FolderSerializer(folders,many=True)
-    return Response({'files':file_serializer.data,'folders':folder_serializer.data})

@@ -21,7 +21,7 @@ from django.contrib.auth.models import User
 class Folder(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
-    inside = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
+    inside = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL)
 
 class GithubInfo(models.Model):
     repo_owner = models.CharField(max_length=255)
@@ -35,4 +35,4 @@ class Storage(models.Model):
     fileSize = models.FloatField()
     timestamp = models.DateTimeField(auto_now_add=True)
     github = models.ForeignKey(GithubInfo, on_delete=models.CASCADE, null=True)
-    inside = models.ForeignKey(Folder, null=True, blank=True, on_delete=models.CASCADE)
+    inside = models.ForeignKey(Folder, null=True, blank=True, on_delete=models.SET_NULL)
