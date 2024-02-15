@@ -28,5 +28,7 @@ urlpatterns = [
     # path('userdata/', include('user_data.urls')),
     path('storage/', include('storage.urls')),
     path('lunar/', include('lunar.urls')),
+    path('photu/', include('photu.urls')),
+    path('utility/', include('utility.urls')),
     
 ]

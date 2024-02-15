@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'user_data',
     'storage',
     'lunar',
+    'photu',
+    'utility',
 ]
 
 MIDDLEWARE = [
