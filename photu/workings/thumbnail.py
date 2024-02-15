@@ -16,5 +16,5 @@ class Thumbnail:
             print(f"Error creating thumbnail: {e}")
             return None
     
-    def get_thumbnails(self,git):
-        return git.download_thumbnail()
+    def get_thumbnails(self,git,thumbnails_store):
+        git.download_thumbnail(thumbnails_store)

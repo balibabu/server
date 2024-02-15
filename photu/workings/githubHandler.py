@@ -32,14 +32,16 @@ class GithubManager:
     def delete_file(filename):
         pass
 
-    def download_thumbnail(self):
+    def download_thumbnail(self,thumbnails_store):
         repo = self.git.get_repo("storeage/thumbnails")
         folder_contents = repo.get_contents(self.username)
-        thumbnails={}
         for item in folder_contents:
-            content = item.decoded_content
-            thumbnails[item.name]=content
-        return thumbnails
+            if item.name not in thumbnails_store:
+                thumbnails_store[item.name]=item.decoded_content
+                print('not')
+            else:
+                print('yes')
+
 
     def create_repo(self,repo):
         try:

@@ -22,5 +22,5 @@ class MiddleMan:
     def delete_file(self,filename):
         pass
 
-    def thumbnails(self):
-        return self.thumb.get_thumbnails(self.git)
+    def thumbnails(self,thumbnails_store):
+        self.thumb.get_thumbnails(self.git,thumbnails_store)

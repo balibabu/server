@@ -81,8 +81,18 @@ def getAThumbnail(request,uname):
     else:
         print('fetching all thumbnails from git')
         m=MiddleMan(user.username)
-        thumbs=m.thumbnails()
-        thumbnails_store|=thumbs# this is un important for logic
+        m.thumbnails(thumbnails_store)
     response = HttpResponse(thumbnails_store[uname], content_type='application/octet-stream')
     return response 
 
+
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def getThumbnailsReady(request):
+    global thumbnails_store
+    user=request.user
+    m=MiddleMan(user.username)
+    m.thumbnails(thumbnails_store)
+    return Response('im ready') 
