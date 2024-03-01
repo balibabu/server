@@ -1,33 +1,22 @@
-import os,pickle
+from git.models import RepoSize 
 
 class RepoMemory:
-    def __init__(self,filename='repo.pkl') -> None:
-        self.filename=filename
-        if not os.path.isfile(filename):
-            with open(filename,'wb') as file:
-                pickle.dump({},file)
 
-        with open(filename, 'rb') as pklFile:
-            self.data = pickle.load(pklFile)
+    def get_size(self, repo):
+        return RepoSize.get_size(repo)
 
-    def save(self):
-        with open(self.filename,'wb') as file:
-            pickle.dump(self.data,file)
+    def add_size(self, repo, size):
+        repo_obj, created = RepoSize.objects.get_or_create(name=repo)
+        repo_obj.size += size
+        repo_obj.save()
 
-    def get_size(self,repo):
-        return self.data.get(repo,0)
+    def remove_size(self, repo, size):
+        try:
+            repo_obj = RepoSize.objects.get(name=repo)
+            repo_obj.size -= size
+            repo_obj.save()
+        except RepoSize.DoesNotExist:
+            pass
 
-    def add_size(self,repo,size):
-        if repo in self.data:
-            self.data[repo]+=size
-        else:
-            self.data[repo]=size
-        self.save()
-
-    def remove_size(self,repo,size):
-        self.data[repo]-=size
-        self.save()
-    
     def get_repos(self):
-        return list(self.data.keys())
-    
+        return list(RepoSize.get_repos())

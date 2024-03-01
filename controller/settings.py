@@ -26,10 +26,6 @@ SECRET_KEY = 'django-insecure-yl2cmyx&59(xh_izbyk@!fc^bhw0@##2buko94h_v939b-6ut4
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-CORS_ALLOW_ALL_ORIGINS = True
-# CSRF_TRUSTED_ORIGINS=["http://localhost:3000"]
-
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -52,17 +48,18 @@ INSTALLED_APPS = [
     'lunar',
     'photu',
     'utility',
+    'git',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 ]
 
 REST_FRAMEWORK = {
@@ -144,3 +141,8 @@ STATIC_ROOT = BASE_DIR / 'static_root/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CORS_ALLOWED_ORIGINS=[
+    "https://balibabu.github.io",
+    "http://localhost:3000"
+]

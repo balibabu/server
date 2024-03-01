@@ -19,8 +19,9 @@ class MiddleMan:
     def download_file(self,filename,repo):
         return self.git.download_file(filename,repo)
 
-    def delete_file(self,filename):
-        pass
+    def delete_file(self,uname,repo,size):
+        self.git.delete_file(uname,repo)
+        RepoSizeManager.delete_file(repo,size)
 
     def thumbnails(self,thumbnails_store):
         self.thumb.get_thumbnails(self.git,thumbnails_store)

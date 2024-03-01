@@ -1,21 +1,6 @@
-# from rest_framework import serializers
-# from .models import Storage, GithubInfo
-
-# class GithubInfoSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = GithubInfo
-#         fields = ['repo_owner', 'repo_name']
-
-# class StorageSerializer(serializers.ModelSerializer):
-#     github_info = GithubInfoSerializer(source='github', read_only=True)
-#     class Meta:
-#         model = Storage
-#         fields = ['id', 'uploadedName', 'originalName', 'fileSize', 'timestamp', 'github_info']
-#         read_only_fields = ['user', 'github']
-
-
 from rest_framework import serializers
-from .models import Storage, GithubInfo, Folder
+from .models import Folder, File
+from git.models import FileInfo
 
 class FolderSerializer(serializers.ModelSerializer):
     class Meta:
@@ -23,14 +8,30 @@ class FolderSerializer(serializers.ModelSerializer):
         fields=['id','title','inside']
         read_only_fields = ['user']
 
-class GithubInfoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = GithubInfo
-        fields = ['repo_owner', 'repo_name']
 
-class StorageSerializer(serializers.ModelSerializer):
-    github_info = GithubInfoSerializer(source='github', read_only=True)
+class FileViewSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    name = serializers.CharField(source='fileInfo.name')
+    size = serializers.FloatField(source='fileInfo.size')
+
     class Meta:
-        model = Storage
-        fields = ['id', 'uploadedName', 'originalName', 'fileSize', 'timestamp', 'github_info','inside']
-        read_only_fields = ['user', 'github']
+        model = File
+        fields = ['name', 'size', 'timestamp', 'inside']
+
+class FileCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=File
+        fields=['fileInfo','inside']
+        read_only_fields = ['user']
+
+class FileInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=FileInfo
+        fields=['name','size']
+        
+class FileSerializer(serializers.ModelSerializer):
+    file_info = FileInfoSerializer(source='fileInfo', read_only=True)
+    class Meta:
+        model = File
+        fields = ['id', 'timestamp', 'file_info','inside']
+        read_only_fields = ['user','fileInfo']

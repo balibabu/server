@@ -3,8 +3,9 @@ import time
 
 class RepoSizeManager:
 
-    def delete_file(filename):
-        pass
+    def delete_file(repo,size):
+        repoMem=RepoMemory()
+        repoMem.remove_size(repo,size)
 
     def get_free_repo(git,repoMem):
         repos=repoMem.get_repos()
@@ -17,7 +18,7 @@ class RepoSizeManager:
             return repo
 
     def upload(git,fileContent,filename,size):
-        repoMem=RepoMemory('repMem.pkl')
+        repoMem=RepoMemory()
         freeRepo=RepoSizeManager.get_free_repo(git,repoMem)
         if git.upload_file(fileContent,filename,freeRepo):
             repoMem.add_size(freeRepo,size)

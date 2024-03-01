@@ -33,9 +33,6 @@ Thumbs.db
 # Ignore log files
 *.log
 
-# ignore migrations
-migrations
-
 admin.py
 
-memory.pkl
+*.pkl

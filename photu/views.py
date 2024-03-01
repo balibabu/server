@@ -6,6 +6,7 @@ from .models import Photo, Repo
 from .workings.middleMan import MiddleMan
 from rest_framework.response import Response
 from django.http import HttpResponse
+from rest_framework import status
 
 
 thumbnails_store={}
@@ -17,7 +18,7 @@ originals_store={}
 @permission_classes([IsAuthenticated])
 def getPhotos(request):
     user=request.user
-    photos=Photo.objects.filter(user=user)
+    photos=Photo.objects.filter(user=user).order_by('id')
     serializer=PhotoSerializer(photos,many=True)
     return Response(serializer.data)
 
@@ -86,7 +87,6 @@ def getAThumbnail(request,uname):
     return response 
 
 
-
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -96,3 +96,16 @@ def getThumbnailsReady(request):
     m=MiddleMan(user.username)
     m.thumbnails(thumbnails_store)
     return Response('im ready') 
+
+
+@api_view(['DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def deletePhoto(request,id):
+    user=request.user
+    m=MiddleMan(user.username)
+    photo=Photo.objects.get(id=id,user=user)
+    repo=Repo.objects.get(photo=photo)
+    m.delete_file(photo.uname,repo.repo,photo.size)
+    photo.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
